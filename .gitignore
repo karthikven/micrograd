@@ -106,6 +106,7 @@ Thumbs.db
 
 # Personal scratch pad (not tracked)
 scratchpad.txt
+exp.py
 
 # Ignore all .log files
 *.log
