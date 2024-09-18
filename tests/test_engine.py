@@ -21,8 +21,8 @@ def test_value_mul():
 
 def test_value_pow():
     a = Value(2.0)
-    b = a ** 3
-    assert b.data == 8.0
+    b = a ** -3
+    assert b.data == 0.125
 
 def test_value_div():
     a = Value(6.0)
@@ -97,5 +97,31 @@ def test_backward_compare_torch():
 
     o_v.backward()
     assert round(w1.grad.item(), 1) == round(w1_v.grad, 1) and round(x1.grad.item(), 1) == round(x1_v.grad, 1) and round(w2.grad.item(), 1) == round(w2_v.grad, 1) and round(x2.grad.item(), 1) == round(x2_v.grad, 1) and round(b.grad.item(), 1) == round(b_v.grad, 1)
+
+def test_backward_negative_power():
+    # Create input value
+    x = Value(2.0, label="x")
+    
+    # Define function: f(x) = x^(-2) + 3x
+    f = x**(-2) + 3*x
+    f.label = "f"
+    
+    # Compute backward pass
+    f.backward()
+    
+    # Expected gradient: df/dx = -2x^(-3) + 3
+    expected_grad = -2 * (2.0**(-3)) + 3
+    
+    # Check if computed gradient matches expected gradient
+    assert abs(x.grad - expected_grad) < 1e-6, f"Expected grad: {expected_grad}, got: {x.grad}"
+    
+    # Additional test with a different value
+    y = Value(0.5, label="y")
+    g = y**(-3) + 2*y
+    g.label = "g"
+    g.backward()
+    
+    expected_grad_y = -3 * (0.5**(-4)) + 2
+    assert abs(y.grad - expected_grad_y) < 1e-6, f"Expected grad: {expected_grad_y}, got: {y.grad}"
 
     
