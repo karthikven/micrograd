@@ -64,11 +64,7 @@ class Value:
             for c in self._children:
                 c.grad += (self.data * self.grad)
         elif len(self._op)>=2 and self._op[:2] == "**":
-            # find the power self.data was raised to
-            val = None
-            for c in self._children:
-                val = c.data
-            exponent = math.log(self.data, val)
+            exponent = float(self._op[2:])
             for c in self._children:
                 diff = exponent * (c.data ** (exponent - 1)) * self.grad
                 c.grad += diff
